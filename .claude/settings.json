@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "permissionMode": "bypassPermissions",
+    "allow": [
+      "Bash(mkdir -p *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(cat *)",
+      "Bash(cat > *)",
+      "Bash(cat >> *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(test -d *)",
+      "Bash(test -f *)",
+      "Bash(find * -type f)",
+      "Bash(find * -name *)",
+      "Bash(ls *)",
+      "Bash(ls -la *)",
+      "Bash(tree *)",
+      "Bash(wc -l *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep -r *)"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(rm -rf *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(chmod *)",
+      "Bash(chown *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(npm *)",
+      "Bash(yarn *)",
+      "Bash(git *)"
+    ]
+  },
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "70"
+  }
+}
