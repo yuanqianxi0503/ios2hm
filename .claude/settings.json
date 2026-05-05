@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "permissionMode": "bypassPermissions",
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(mkdir -p *)",
       "Bash(mkdir *)",

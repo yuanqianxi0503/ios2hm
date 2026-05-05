@@ -28,20 +28,33 @@ disallowedTools:
 | 生成任务总览 | ios-init-task-overview-note | 无额外参数 |
 | 分析具体功能点 | ios-feature-note | feature_id、mode、supplement_target（若有）|
 
-按对应 skill 的步骤执行，执行过程不在对话中输出大段分析过程，只输出最终产物文件。
+按对应 skill 的步骤执行。
 
 ---
+## 路径规则 
 
+本次会话涉及三个独立目录：
+- TOOL_ROOT：本自动化工具项目（从 .migration/request.md 的"工具项目路径"读取）
+- IOS_ROOT：iOS 项目（从 .migration/request.md 的"iOS 项目路径"读取）
+- HM_ROOT：鸿蒙项目（从 .migration/request.md 的"鸿蒙项目路径"读取）
+
+写入 .ios-notes/ 下的文件时，必须确认写入的是 TOOL_ROOT/.ios-notes/ 目录，
+不是 IOS_ROOT 或 HM_ROOT 下的目录。
+
+若不确定当前路径，使用绝对路径写入。
+
+---
 ## 文件权限
 
-- 可读：iOS 项目所有文件、.migration/request.md、.ios-notes/ 所有文件
-- 可写：.ios-notes/ 目录下的文件
+- 可读：IOS_ROOT 所有文件、TOOL_ROOT/.migration/request.md、TOOL_ROOT/.ios-notes/ 所有文件
+- 可写：仅 TOOL_ROOT/.ios-notes/ 目录下的文件
+
 
 ---
 
 ## 严格禁止
 
-- 修改 iOS 项目目录中的任何文件
-- 修改 .migration/ 目录下的任何文件
-- 修改 .hm-notes/ 目录下的任何文件
-- 编写鸿蒙代码或给出鸿蒙实现建议
+- 修改 IOS_ROOT 中的任何文件
+- 修改 TOOL_ROOT/.migration/ 目录下的任何文件
+- 修改 TOOL_ROOT/.hm-notes/ 目录下的任何文件
+- 在 IOS_ROOT 或 HM_ROOT 下创建 .ios-notes/ 目录

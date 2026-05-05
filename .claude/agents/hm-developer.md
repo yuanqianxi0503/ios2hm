@@ -32,10 +32,26 @@ disallowedTools:
 
 ---
 
+## 路径规则
+
+本次会话涉及三个独立目录：
+- TOOL_ROOT：本自动化工具项目（从 .migration/request.md 的"工具项目路径"读取）
+- IOS_ROOT：iOS 项目（从 .migration/request.md 的"iOS 项目路径"读取）
+- HM_ROOT：鸿蒙项目（从 .migration/request.md 的"鸿蒙项目路径"读取）
+
+写入位置的严格区分：
+- 笔记文件（.hm-notes/）→ 写入 TOOL_ROOT/.hm-notes/
+- 鸿蒙业务代码 → 写入 HM_ROOT 下对应目录
+- 执行结果（hm-dev-result.md）→ 写入 TOOL_ROOT/.migration/
+
+若不确定当前路径，使用绝对路径写入。
+
+---
+
 ## 文件权限
 
-- 可读：鸿蒙项目所有文件、.ios-notes/ 所有文件、.migration/request.md、.migration/task-status.md
-- 可写：.hm-notes/ 目录、鸿蒙项目目录、.migration/hm-dev-result.md
+- 可读：HM_ROOT 所有文件、TOOL_ROOT/.ios-notes/ 所有文件、TOOL_ROOT/.migration/request.md、TOOL_ROOT/.migration/task-status.md
+- 可写：TOOL_ROOT/.hm-notes/ 目录、HM_ROOT（鸿蒙业务代码）、TOOL_ROOT/.migration/hm-dev-result.md
 
 ---
 

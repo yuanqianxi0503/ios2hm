@@ -1,5 +1,9 @@
 .claude/settings.local.json
-.ios-notes/
-.hm-notes/
-.migration/task-status.md
-.migration/hm-dev-result.md
+.ios-notes/*
+!.ios-notes/.gitkeep
+.hm-notes/*
+!.hm-notes/.gitkeep
+.migration/*
+!.migration/.gitkeep
+.build-logs/*
+!.build-logs/.gitkeep
