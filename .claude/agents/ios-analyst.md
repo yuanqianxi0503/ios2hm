@@ -25,7 +25,8 @@ disallowedTools:
 
 | 任务类型 | 使用的 Skill | 透传参数 |
 |---|---|---|
-| 生成任务总览 | ios-init-task-overview-note | 无额外参数 |
+| 生成任务总览 | ios-init-task-overview-note | mode: initial |
+| 补充/修正任务总览 | ios-init-task-overview-note | mode: supplement, user_feedback |
 | 分析具体功能点 | ios-feature-note | feature_id、mode、supplement_target（若有）|
 
 按对应 skill 的步骤执行。

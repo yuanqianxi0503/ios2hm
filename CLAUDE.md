@@ -88,9 +88,8 @@
 | .ios-notes/task-overview.md | .hm-notes/dev-plan.md | 动作 |
 |---|---|---|
 | 不存在 | 任意 | 从 Step 1 开始 |
-| 存在 | 不存在 | 从 Step 2 开始 |
-| 存在 | 存在 | 从 Step 3 开始 |
-
+| 存在 | 不存在 | 从 Step 2.5 开始 |
+| 存在 | 存在 | 从 Step 2.5 开始 |
 ---
 
 **Step 1：生成 iOS 任务总览**
@@ -118,7 +117,49 @@
 若文件存在且内容完整，继续 Step 3
 
 ---
+**Step 2.5：向用户展示功能点列表，等待确认**
 
+读取 .ios-notes/task-overview.md，在对话中按以下格式展示：
+
+---
+iOS 分析已完成，请确认以下功能点列表后再开始开发。
+
+📋 功能点列表（共 N 个）
+
+  F-001  {功能点名称}     {概述}
+  F-002  {功能点名称}     {概述}
+  ...
+
+⚠️ 需要您判断的模糊项（无则不展示此区块）
+
+  F-xxx  UNCERTAIN
+         疑虑：{task-overview 中该条目的疑问内容}
+
+---
+完整分析详见：.ios-notes/task-overview.md
+
+您可以：
+- 直接回复"确认"继续开发
+- 指出需要增加或删除的功能点
+- 对模糊项给出判断（保留 / 跳过）
+---
+
+等待用户回复：
+
+用户回复"确认" →
+  进入 Step 3
+
+用户提出修改意见 →
+  召唤 ios-analyst 执行任务：
+    任务：补充/修正任务总览
+    mode：supplement
+    user_feedback：{用户的原始回复内容，完整透传，不做裁剪}
+  等待 ios-analyst 完成后
+  重新读取 .ios-notes/task-overview.md
+  重新在对话中展示更新后的功能点列表
+  回到本步骤顶部，继续等待用户确认
+  （循环直到用户确认）
+ ---
 **Step 3：生成初始任务状态文件**
 
 读取以下文件：
@@ -224,16 +265,44 @@ status = need_human_info →
 → 回到主循环顶部
 
 ---
-
 **hm_build 步骤**
 
 读取当前 feature-id：进度日志最后一行的 feature-id
+
+**Phase 1：清空结果文件**
+
+将 .migration/hm-dev-result.md 内容清空（保留文件，内容置为空），
+确保后续能准确判断 subagent 是否真正完成了任务。
+
+**Phase 2：尝试召唤 subagent**
 
 召唤 hm-build-fixer 执行任务：
 任务：编译验证功能点 {feature-id}
 参数：feature_id = {feature-id}
 
-等待 hm-build-fixer 完成后：
+无论 subagent 输出了什么内容、无论它是否声称"即将执行"，
+召唤结束后立即执行 Phase 3，不等待、不停止。
+
+**Phase 3：检测 subagent 是否完成任务**
+
+subagent 返回后，读取 .migration/hm-dev-result.md：
+
+文件包含 "status: completed" 或 "status: need_human_info" → subagent 正常完成，进入【结果处理】
+其他情况（文件为空、内容不完整、格式异常）             → subagent 未完成任务，进入【降级执行】
+
+---
+
+**【降级执行】**
+
+由于suagent未能成功编译构建，你需要使用hm-build-and-fix skill（位于 .claude/skills/hm-build-and-fix/SKILL.md），按其中的完整流程执行。
+传入参数：feature_id = {feature-id}
+
+执行完成后，进入【结果处理】
+
+---
+
+**【结果处理】**
+
 读取 .migration/hm-dev-result.md 获取返回状态，然后清空该文件。
 
 hm-dev-result.md 格式保持不变，status 可能值：
@@ -256,7 +325,6 @@ status = need_human_info →
      {feature-id}：human_info[unstart]
 
 → 回到主循环顶部
-
 ---
 
 **human_info 步骤**
@@ -297,6 +365,7 @@ status = need_human_info →
 只有以下情况才停止并等待用户：
 - 进度日志末尾存在 human_info[unstart] 行且用户本轮未提供答案
 - 阶段一中 request.md 信息不完整
+- 阶段二 Step 2.5 中，功能点列表展示后等待用户确认
 
 其他所有情况（iOS 笔记不足、实现方案有多种选择、鸿蒙规范不确定）
 均自主决策，选择最接近 iOS 逻辑的保守方案，在 .hm-notes/ 中注明差异。
