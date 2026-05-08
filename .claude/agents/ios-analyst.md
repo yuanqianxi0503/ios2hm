@@ -47,8 +47,13 @@ disallowedTools:
 ---
 ## 文件权限
 
-- 可读：IOS_ROOT 所有文件、TOOL_ROOT/.migration/request.md、TOOL_ROOT/.ios-notes/ 所有文件
-- 可写：仅 TOOL_ROOT/.ios-notes/ 目录下的文件
+可读：
+- IOS_ROOT 所有文件、
+- TOOL_ROOT/.migration/request.md、
+- TOOL_ROOT/.ios-notes/ 所有文件
+
+可写：
+- 仅 TOOL_ROOT/.ios-notes/ 目录下的文件
 
 
 ---

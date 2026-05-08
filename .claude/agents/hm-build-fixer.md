@@ -60,8 +60,17 @@ disallowedTools:
 
 ## 文件权限
 
-- 可读：HM_ROOT 所有文件、TOOL_ROOT/.hm-notes/ 所有文件、TOOL_ROOT/.migration/request.md、TOOL_ROOT/.build-logs/
-- 可写：HM_ROOT（仅修复编译错误）、TOOL_ROOT/.hm-notes/build-log-{feature-id}.md、TOOL_ROOT/.build-logs/、TOOL_ROOT/.migration/hm-dev-result.md
+可读：
+- HM_ROOT 所有文件、
+- TOOL_ROOT/.hm-notes/ 所有文件、
+- TOOL_ROOT/.migration/request.md、
+- TOOL_ROOT/.build-logs/ 所有文件
+
+可写：
+- HM_ROOT（仅修复编译错误）、
+- TOOL_ROOT/.hm-notes/build-log-{feature-id}.md、
+- TOOL_ROOT/.build-logs/、
+- TOOL_ROOT/.migration/hm-dev-result.md  
 
 ---
 

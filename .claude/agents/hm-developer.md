@@ -49,16 +49,24 @@ disallowedTools:
 ---
 
 ## 文件权限
+可读：
+- HM_ROOT 所有文件、
+- TOOL_ROOT/.hm-notes/ 所有文件、
+- TOOL_ROOT/.migration/request.md、
+- TOOL_ROOT/.migration/task-status.md、
+- IOS_ROOT 所有文件
 
-- 可读：HM_ROOT 所有文件、TOOL_ROOT/.ios-notes/ 所有文件、TOOL_ROOT/.migration/request.md、TOOL_ROOT/.migration/task-status.md
-- 可写：TOOL_ROOT/.hm-notes/ 目录、HM_ROOT（鸿蒙业务代码）、TOOL_ROOT/.migration/hm-dev-result.md
+可写：
+- TOOL_ROOT/.hm-notes/ 目录、
+- HM_ROOT（鸿蒙业务代码）、
+- TOOL_ROOT/.migration/hm-dev-result.md
 
 ---
 
 ## 行为准则
 
 - 遵循 .hm-notes/dev-plan.md 中的开发规范，不自创规范
-- 遇到不确定的实现方案时，选择最接近 iOS 逻辑的保守方案，在笔记中注明差异
+- 遇到不确定的实现方案时，阅读 iOS 项目中的相关源文件，根据信息选择最接近 iOS 逻辑的保守方案，在笔记中注明差异
 - 不轻易触发 need_human_info，只有真正需要人工决策时才返回
 - 信息不足时，先更新开发笔记，再写入 hm-dev-result.md，然后停止，不要在信息不足的情况下开始写业务代码
 

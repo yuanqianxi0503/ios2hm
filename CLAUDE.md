@@ -88,14 +88,16 @@
 | .ios-notes/task-overview.md | .hm-notes/dev-plan.md | 动作 |
 |---|---|---|
 | 不存在 | 任意 | 从 Step 1 开始 |
-| 存在 | 不存在 | 从 Step 2.5 开始 |
-| 存在 | 存在 | 从 Step 2.5 开始 |
+| 存在 | 不存在 | 从 Step 2 开始 |
+| 存在 | 存在 | 从 Step 4 开始 |
+
 ---
 
 **Step 1：生成 iOS 任务总览**
 
-召唤 ios-analyst 执行任务：
+召唤 ios-analyst 执行任务：（即使用户给出了功能点 也需要召唤ios-analyst agent 不可以自己分析）
 任务：生成本次迁移任务的 iOS 功能点总览
+mode：initial
 
 等待 ios-analyst 完成后，检查产物：
 - 文件：.ios-notes/task-overview.md
@@ -105,19 +107,7 @@
 
 ---
 
-**Step 2：生成鸿蒙开发方案**
-
-召唤 hm-developer 执行任务：
-任务：基于 iOS 总览，制定鸿蒙开发方案
-
-等待 hm-developer 完成后，检查产物：
-- 文件：.hm-notes/dev-plan.md
-- 内容：应包含新增文件规划和开发规范
-
-若文件存在且内容完整，继续 Step 3
-
----
-**Step 2.5：向用户展示功能点列表，等待确认**
+**Step 2：向用户展示功能点列表，等待确认**
 
 读取 .ios-notes/task-overview.md，在对话中按以下格式展示：
 
@@ -159,8 +149,23 @@ iOS 分析已完成，请确认以下功能点列表后再开始开发。
   重新在对话中展示更新后的功能点列表
   回到本步骤顶部，继续等待用户确认
   （循环直到用户确认）
- ---
-**Step 3：生成初始任务状态文件**
+
+---
+
+**Step 3：生成鸿蒙开发方案**
+
+召唤 hm-developer 执行任务：
+任务：基于 iOS 总览，制定鸿蒙开发方案
+
+等待 hm-developer 完成后，检查产物：
+- 文件：.hm-notes/dev-plan.md
+- 内容：应包含新增文件规划和开发规范
+
+若文件存在且内容完整，继续 Step 4
+
+---
+
+**Step 4：生成初始任务状态文件**
 
 读取以下文件：
 - .ios-notes/task-overview.md
@@ -285,7 +290,7 @@ status = need_human_info →
 
 **Phase 3：检测 subagent 是否完成任务**
 
-subagent 返回后，读取 .migration/hm-dev-result.md：
+subagent 返回后，注意绝对不能根据suagent的输出判断是否完成了构建，只能通过读取 .migration/hm-dev-result.md判断是否完成了构建：
 
 文件包含 "status: completed" 或 "status: need_human_info" → subagent 正常完成，进入【结果处理】
 其他情况（文件为空、内容不完整、格式异常）             → subagent 未完成任务，进入【降级执行】
@@ -365,7 +370,7 @@ status = need_human_info →
 只有以下情况才停止并等待用户：
 - 进度日志末尾存在 human_info[unstart] 行且用户本轮未提供答案
 - 阶段一中 request.md 信息不完整
-- 阶段二 Step 2.5 中，功能点列表展示后等待用户确认
+- 阶段二 Step 2 中，功能点列表展示后等待用户确认
 
 其他所有情况（iOS 笔记不足、实现方案有多种选择、鸿蒙规范不确定）
 均自主决策，选择最接近 iOS 逻辑的保守方案，在 .hm-notes/ 中注明差异。
