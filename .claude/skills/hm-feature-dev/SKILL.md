@@ -14,12 +14,14 @@
 - feature_id：当前功能点 ID（如 F-002）
 
 读取以下文件：
-- .ios-notes/note-{feature-id}.md：iOS 实现细节参考
+
+- .ios-notes/note-{feature-id}.md：该功能点iOS 实现细节笔记参考
+- .hm-notes/：鸿蒙的各个功能点实现笔记
 - .hm-notes/dev-plan.md：鸿蒙项目规范和文件规划
-- .migration/request.md：鸿蒙项目路径
+- .migration/request.md：鸿蒙项目路径 ios项目路径
 - .migration/task-status.md：了解该功能点的历史记录
   （若存在 `human_info[completed] 用户回答：{xxx}` 行，作为开发决策依据）
-- IOS_ROOT 中该功能点相关的源文件
+- IOS_ROOT 开发时按需读取 该功能点相关的源文件
 
 ---
 ## 开发决策矩阵：何时参考iOS笔记，何时复用HM项目代码
@@ -234,6 +236,9 @@ Socket连接管理	Socket初始化、连接、断开、重连逻辑	使用项目
 {实现上与 iOS 不同的地方及原因，没有则写"无"}
 {若与 dev-plan.md 规划有偏差，在此注明}
 {若直接读了 iOS 源文件补充信息，在此注明}
+
+## 项目业务知识总结
+{总结开发该功能点学习到的对后续开发可能有帮助的项目业务知识}
 
 ## 遗留问题
 {未完全解决的问题，没有则写"无"}
