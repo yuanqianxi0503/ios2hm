@@ -69,6 +69,7 @@ disallowedTools:
 - 遇到不确定的实现方案时，阅读 iOS 项目中的相关源文件，根据信息选择最接近 iOS 逻辑的保守方案，在笔记中注明差异
 - 不轻易触发 need_human_info，只有真正需要人工决策时才返回
 - 信息不足时，先更新开发笔记，再写入 hm-dev-result.md，然后停止，不要在信息不足的情况下开始写业务代码
+- 写入 .migration/hm-dev-result.md 时必须包含 step: hm_dev，方便主 Agent 区分该结果不是 hm_build 阶段产物
 
 ---
 

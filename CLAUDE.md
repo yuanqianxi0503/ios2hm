@@ -232,18 +232,34 @@ F-001：ios_note[unstart]
 
 读取当前 feature-id：进度日志最后一行的 feature-id
 
+先读取 .migration/hm-dev-result.md：
+- 若文件中已有 step = hm_dev、feature_id = 当前 feature-id，且 status 为 completed / need_ios_info / need_human_info
+  → 说明上次 hm-developer 已完成但主 Agent 可能尚未处理结果，本轮直接进入结果处理，不要重复召唤 hm-developer
+- 若文件为空、step 不匹配、feature_id 不匹配、或 status 不属于 hm_dev 允许值
+  → 清空 .migration/hm-dev-result.md，然后继续召唤 hm-developer
+
+若命中已有有效 hm_dev 结果，跳过召唤 hm-developer，直接根据该结果更新进度日志。
+若未命中已有有效 hm_dev 结果，才执行下面的召唤步骤。
+
 召唤 hm-developer 执行任务：
 任务：实现功能点 {feature-id} 的鸿蒙代码
 参数：feature_id = {feature-id}
 
 等待 hm-developer 完成后：
-读取 .migration/hm-dev-result.md 获取返回状态，然后清空该文件。
+读取 .migration/hm-dev-result.md 获取返回状态。
 
 hm-dev-result.md 格式：
 
+step: hm_dev
 status: completed / need_ios_info / need_human_info
 feature_id: F-xxx
 reason: {具体说明}
+
+读取结果时必须同时校验 step、feature_id、status：
+- step 必须等于 hm_dev
+- feature_id 必须等于当前 feature-id
+- status 必须属于 completed / need_ios_info / need_human_info
+- 若校验失败，按进度日志写入规则将 hm_dev[unstart] 改为 hm_dev[need_human_info] hm-developer 未写入有效结果，并追加 human_info[unstart]，清空 .migration/hm-dev-result.md，然后回到主循环顶部
 
 根据 status 更新进度日志：
 
@@ -267,6 +283,9 @@ status = need_human_info →
   2. 追加：
      {feature-id}：human_info[unstart]
 
+进度日志更新完成后，再清空 .migration/hm-dev-result.md。
+严禁在进度日志更新前清空有效结果；否则中断恢复时会丢失 subagent 已完成的状态。
+
 → 回到主循环顶部
 
 ---
@@ -276,8 +295,18 @@ status = need_human_info →
 
 **Phase 1：准备编译循环**
 
-将 .migration/hm-dev-result.md 内容清空（保留文件，内容置为空），
-确保后续能准确读取 hm-build-fixer 对每次编译日志的判断结果。
+先读取 .migration/hm-dev-result.md：
+- 若文件中已有 step = hm_build、feature_id = 当前 feature-id，且 status 为 completed / need_human_info
+  → 说明上次 hm-build-fixer 已完成最终判断但主 Agent 可能尚未处理结果，本轮直接进入【结果处理】，不要清空，也不要重新编译
+- 若文件中已有 step = hm_build、feature_id = 当前 feature-id，且 status 为 fixed
+  → 说明上次 hm-build-fixer 已完成一次修复但主 Agent 可能尚未继续编译，本轮清空该结果后继续编译下一次
+- 若文件为空、step 不匹配、feature_id 不匹配、或 status 不属于 hm_build 允许值
+  → 清空 .migration/hm-dev-result.md，避免读取到其他阶段的旧结果
+
+清空只允许发生在"准备开始新一轮编译"之前。
+严禁清空 completed / need_human_info 这类尚未写入 task-status.md 的最终结果。
+若命中已有有效 hm_build 最终结果，跳过 Phase 2-4，直接进入【结果处理】。
+若未命中已有有效 hm_build 最终结果，才继续执行下面的编译循环。
 
 读取 .migration/request.md 中的鸿蒙项目路径 HM_ROOT。
 确保 .build-logs/F-{feature-id}/ 目录存在。
@@ -314,6 +343,15 @@ status = need_human_info →
 - build_log_path = .build-logs/F-{feature-id}/attempt-{attempt_no}.log
 - max_attempts = 5（表示最多自动修复 5 次）
 
+召唤 prompt 只能包含上述任务说明和 4 个参数。
+严禁在 prompt 中粘贴：
+- attempt-*.log 的任何原文内容
+- 错误列表全文
+- 源码片段
+- 上一次 hm-build-fixer 的完整输出
+
+如需上下文，hm-build-fixer 必须自己通过 build_log_path 和相关文件路径按日志读取策略读取。
+
 hm-build-fixer 负责：
 - 读取本次编译日志
 - 判断编译是否已经通过
@@ -327,8 +365,16 @@ hm-build-fixer 负责：
 
 召唤结束后，读取 .migration/hm-dev-result.md 获取返回状态。
 
+**主 Agent 在本阶段的硬性限制：**
+- 只允许读取 .migration/hm-dev-result.md 判断下一步
+- 禁止读取 build_log_path 分析 BUILD SUCCESS / ERROR / BUILD FAILED
+- 禁止主 Agent 自行修复鸿蒙代码
+- 禁止主 Agent 直接使用 hm-build-and-fix skill 作为降级修复
+- 若 hm-build-fixer 没有写入有效 hm-dev-result.md，只能按"其他情况"转 human_info，不得补救执行修复
+
 hm-dev-result.md 格式：
 
+step: hm_build
 status: completed / fixed / need_human_info
 feature_id: F-xxx
 reason: {具体说明}
@@ -348,17 +394,29 @@ status = need_human_info →
   进入【结果处理】
 
 其他情况（文件为空、内容不完整、格式异常） →
-  按进度日志写入规则将 hm_build[unstart] 改为 hm_build[need_human_info] hm-build-fixer 未写入有效结果，并追加 human_info[unstart]，然后回到主循环顶部
+  1. 禁止读取编译日志或尝试修复
+  2. 按进度日志写入规则将 hm_build[unstart] 改为：
+     {feature-id}：hm_build[need_human_info] hm-build-fixer 未写入有效结果
+  3. 追加：
+     {feature-id}：human_info[unstart]
+  4. 清空 .migration/hm-dev-result.md
+  5. 回到主循环顶部
 
 ---
 
 **【结果处理】**
 
-读取 .migration/hm-dev-result.md 获取返回状态，然后清空该文件。
+读取 .migration/hm-dev-result.md 获取返回状态。
 
 进入结果处理时，hm-dev-result.md 的 status 可能值：
 - completed：编译通过
 - need_human_info：存在无法自动修复的错误，或 hm-build-fixer 判断需要人工介入
+
+读取结果时必须同时校验 step、feature_id、status：
+- step 必须等于 hm_build
+- feature_id 必须等于当前 feature-id
+- status 必须属于 completed / need_human_info
+- 若校验失败，不得读取编译日志或尝试修复；按进度日志写入规则将 hm_build[unstart] 改为 hm_build[need_human_info] hm-build-fixer 未写入有效结果，并追加 human_info[unstart]，清空 .migration/hm-dev-result.md，然后回到主循环顶部
 
 根据 status 更新进度日志：
 
@@ -374,6 +432,9 @@ status = need_human_info →
      {feature-id}：hm_build[need_human_info] {从 reason 中提取的核心错误类型}
   2. 追加：
      {feature-id}：human_info[unstart]
+
+进度日志更新完成后，再清空 .migration/hm-dev-result.md。
+严禁在进度日志更新前清空有效结果；否则中断恢复时会丢失 hm-build-fixer 已完成的最终判断。
 
 → 回到主循环顶部
 ---

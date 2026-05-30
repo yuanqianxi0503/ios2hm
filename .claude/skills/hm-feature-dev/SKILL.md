@@ -252,6 +252,7 @@ Socket连接管理	Socket初始化、连接、断开、重连逻辑	使用项目
 
 格式示例：
 
+step: hm_dev
 status: completed | need_ios_info | need_human_info
 feature_id: F-xxx
 reason: {说明}
@@ -271,5 +272,6 @@ reason: {说明}
 - .migration/ 目录下只允许写入 hm-dev-result.md，禁止修改其他文件
 - 禁止修改 .ios-notes/ 目录下的任何文件
 - 退出前（无论何种 status）必须先更新开发笔记，再写 hm-dev-result.md
+- hm-dev-result.md 必须包含 step: hm_dev
 - 笔记记录的是进度状态，不粘贴完整实现代码
 - 开发步骤不强制固定顺序，根据功能点实际职责灵活调整
